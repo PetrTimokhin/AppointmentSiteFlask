@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <title>Регистрация</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/auth.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+</head>
+ <body>
+  <div class="main">
+    <input type="checkbox" id="chk" aria-hidden="true">
+
+    <div class="signup">
+      <form action="{{ url_for('register') }}" method="post" enctype="multipart/form-data">
+        <label for="chk" aria-hidden="true">Регистрация</label>
+        <input type="text" name="name" placeholder="Имя пользователя" required="">
+        <input type="email" name="email" placeholder="Email" required="">
+<!--        <input type="number" name="tel" placeholder="Телефон" required="">-->
+        <input type="password" name="pswd" placeholder="Пароль" required="">
+        <button>Зарегистрироваться</button>
+      </form>
+
+    </div>
+    <div class="login">
+      <form action="{{ url_for('login') }}" method="post" enctype="multipart/form-data">
+        <label for="chk" aria-hidden="true">Авторизация</label>
+        <input type="email" name="email" placeholder="Email" required="">
+        <input type="password" name="pswd" placeholder="Пароль" required="">
+        <button>Войти</button>
+        <p class="link"><a href="./register">Нет аккаунта? Пройдите регистрацию!</a></p>
+      </form>
+    </div>
+
+  </div>
+ <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>
