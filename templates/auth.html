@@ -13,10 +13,10 @@
     <div class="signup">
       <form action="{{ url_for('register') }}" method="post" enctype="multipart/form-data">
         <label for="chk" aria-hidden="true">Регистрация</label>
-        <input type="text" name="name" placeholder="Имя пользователя" required="">
+        <input type="text" name="login" placeholder="Имя пользователя" required="">
         <input type="email" name="email" placeholder="Email" required="">
 <!--        <input type="number" name="tel" placeholder="Телефон" required="">-->
-        <input type="password" name="pswd" placeholder="Пароль" required="">
+        <input type="password" name="password" placeholder="Пароль" required="">
         <button>Зарегистрироваться</button>
       </form>
 
@@ -25,7 +25,7 @@
       <form action="{{ url_for('login') }}" method="post" enctype="multipart/form-data">
         <label for="chk" aria-hidden="true">Авторизация</label>
         <input type="email" name="email" placeholder="Email" required="">
-        <input type="password" name="pswd" placeholder="Пароль" required="">
+        <input type="password" name="password" placeholder="Пароль" required="">
         <button>Войти</button>
         <p class="link"><a href="./register">Нет аккаунта? Пройдите регистрацию!</a></p>
       </form>

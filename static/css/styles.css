@@ -1,0 +1,190 @@
+/* Основной контейнер */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 15px;
+}
+
+/* Минимальная ширина страницы */
+body {
+  min-width: 320px;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 600px) {
+  body {
+    min-width: 320px;
+  }
+  .container {
+    width: 100%;
+    padding: 0 15px;
+  }
+  .time-slot {
+    width: 80px;
+    height: 40px;
+    margin: 5px;
+  }
+  .form-group {
+    text-align: left;
+  }
+}
+
+/* Стили для временных слотов */
+.time-slot {
+  width: 90px;
+  height: 50px;
+  margin: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.time-slot.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+.time-slot.disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  pointer-events: none;
+  transition: none;
+}
+
+/* Стили для календаря */
+#calendar {
+  max-width: 100%;
+  margin: 0 auto;
+  transition: transform 0.3s;
+}
+
+.fc .fc-daygrid-day-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#calendar .fc-daygrid-day {
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+#calendar .fc-daygrid-day.fc-day-today {
+  background-color: #ffeeba;
+}
+
+#calendar .fc-daygrid-day:hover {
+  background-color: #e9ecef;
+  transform: scale(1.05);
+}
+
+#calendar .fc-daygrid-day.fc-day-selected {
+  background-color: #007bff;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Стили для заголовка календаря */
+.fc-toolbar-title {
+  font-size: 1em; /* Уменьшение размера текста заголовка */
+}
+
+.fc-toolbar.fc-header-toolbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; /* Разрешить перенос кнопок на новую строку */
+}
+
+.fc-button {
+  font-size: 0.8em; /* Уменьшение размера текста кнопок */
+  padding: 2px 5px; /* Уменьшение размеров кнопок */
+  margin: 2px; /* Уменьшение промежутка между кнопками */
+}
+
+.fc-button-group .fc-button {
+  margin-left: 2px; /* Уменьшение промежутка между кнопками */
+}
+
+.fc-today-button {
+  font-size: 0.8em; /* Уменьшение размера текста кнопки "Сегодня" */
+  padding: 2px 5px; /* Уменьшение размеров кнопки "Сегодня" */
+  margin: 2px;
+}
+
+/* Стили для списка услуг */
+.service-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.service-item {
+  width: 100%;
+  max-width: 600px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 15px;
+  margin: 10px 0;
+  background-color: #f9f9f9;
+}
+
+.service-item h5 {
+  margin: 0 0 5px 0;
+  font-size: 1.2em;
+}
+
+.service-item p {
+  margin: 0 0 10px 0;
+  font-size: 1em;
+}
+
+/* Стили для таблицы */
+.table {
+  width: 100%;
+  margin-bottom: 20px;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  border: 1px solid #dee2e6;
+  padding: 8px;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f8f9fa;
+}
+
+h2 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 5px;
+  font-size: 1.5em;
+  color: #343a40;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .table th,
+  .table td {
+    padding: 5px;
+    font-size: 14px;
+  }
+
+  .table th {
+    font-size: 16px;
+  }
+
+  h2 {
+    font-size: 1.2em;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    padding-bottom: 4px;
+  }
+}
