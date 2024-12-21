@@ -1,133 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
+{% extends 'base.html' %}
+
+    {% block title_head %}
     <title>Запись к психологу</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Для адаптивности -->
-    <link
+    {% endblock %}
+
+    {% block link %}
+     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     />
     <link
       rel="stylesheet"
       type="text/css"
-      href="/static/css/styles.css"
+      href="{{ url_for('static', filename='css/styles.css') }}"
     />
     <link
       href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css"
       rel="stylesheet"
     />
-  </head>
-  <body>
+    {% endblock %}
+
+    {% block content %}
     <div class="container">
-
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/">Главная</a>
-        <div class="navbar">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="./register"
-                >Кабинет(админ)</a
-              >
-            </li>
-          </ul>
-        </div>
-      </nav>
-
-  <div class="container">
       <h1>Онлайн запись</h1>
-      <form method="POST">
-          <input id="date" name="date" required type="hidden" value="">
-          <input id="time" name="time" required type="hidden" value="">
+      <form action="{{ url_for('index') }}" method="post" enctype="multipart/form-data">
           <input id="csrf_token" name="csrf_token" type="hidden" value="IjAzOTI0NDE0ZmQ0OWI5Y2UyYTdlMDNiZGNjNzIzZTU0Mjg5ZTIyMmIi.Z08geA.e3mfGXV1hKAhR9Wqzp0K_UtRLG8">
           <div class="form-group">
               <label for="client_name">ФИО</label><br>
-              <input class="form-control" id="client_name" name="client_name" required type="text" value="">
+              <input class="form-control" id="client_name" name="client_name" required type="text" value="{{ client_name }}">
           </div>
           <div class="form-group">
             <label for="phone_number">Введите номер вашего телефона</label><br>
-            <input class="form-control" id="phone_number" name="phone_number" required type="text" value="">
-        </div>
+            <input class="form-control" id="phone_number" name="phone_number" required type="tel" value="{{ phone_number }}">
+          </div>
           <div class="form-group">
               <div id="calendar"></div>
-              <input class="d-none" id="date" name="date" required type="hidden" value="">  <!-- Скрытое поле для даты -->
+              <input class="d-none" id="date" name="date" required="required" type="hidden" value="">  <!-- Скрытое поле для даты -->
           </div>
           <div class="form-group">
               <label for="time">Выберите слот для записи</label><br>
               <div id="time-slots" class="d-flex flex-wrap justify-content-center">
 
-                      <div class="time-slot" data-value="09:00">
-                          09:00
-                      </div>
-
-                      <div class="time-slot" data-value="10:00">
-                          10:00
-                      </div>
-
-                      <div class="time-slot" data-value="11:00">
-                          11:00
-                      </div>
-
-                      <div class="time-slot" data-value="12:00">
-                          12:00
-                      </div>
-
-                      <div class="time-slot" data-value="13:00">
-                          13:00
-                      </div>
-
-                      <div class="time-slot" data-value="14:00">
-                          14:00
-                      </div>
-
-                      <div class="time-slot" data-value="15:00">
-                          15:00
-                      </div>
-
-                      <div class="time-slot" data-value="16:00">
-                          16:00
-                      </div>
-
-                      <div class="time-slot" data-value="17:00">
-                          17:00
-                      </div>
-                      <div class="time-slot" data-value="17:00">
-                          18:00
-                      </div>
-                      <div class="time-slot" data-value="17:00">
-                          19:00
-                      </div>
-                      <div class="time-slot" data-value="17:00">
-                          20:00
-                      </div>
+                  <div class="time-slot" data-value="09:00">09:00</div>
+                  <div class="time-slot" data-value="10:00">10:00</div>
+                  <div class="time-slot" data-value="11:00">11:00</div>
+                  <div class="time-slot" data-value="12:00">12:00</div>
+                  <div class="time-slot" data-value="13:00">13:00</div>
+                  <div class="time-slot" data-value="14:00">14:00</div>
+                  <div class="time-slot" data-value="15:00">15:00</div>
+                  <div class="time-slot" data-value="16:00">16:00</div>
+                  <div class="time-slot" data-value="17:00">17:00</div>
+                  <div class="time-slot" data-value="17:00">18:00</div>
+                  <div class="time-slot" data-value="17:00">19:00</div>
+                  <div class="time-slot" data-value="17:00">20:00</div>
 
               </div>
-              <input class="d-none" id="time" name="time" required type="hidden" value="">
+              <input type="hidden" class="d-none" id="time" name="time" required="required">
           </div>
-          <div class="form-group">
-              <label for="service">Выберите тип услуги</label><br>
-              <div class="service-list">
 
-                      <div class="service-item">
-                          <h5>Очная сессия</h5>
-                          <p>4000.00</p>
-                          <input id="service-0" name="service" type="checkbox" value="1">
-                      </div>
+            <div class="form-group">
+              <p>Выберите тип услуги</p>
+                <div class="service-list">
+                    <div class="service-item">
+                        <input type="radio" name="service" value="Очная сессия 4000р"> Очная сессия 4000руб<br>
+                    </div>
+                    <div class="service-item">
+                        <input type="radio" name="service" value="Онлайн сессия 3000р"> Онлайн сессия 3000руб<br>
+                    </div>
+                    <div class="service-item">
+                        <input type="radio" name="service" value="Сессия для пар 7000р"> Сессия для пар 7000руб<br>
+                    </div>
+                </div>
+            </div>
 
-                      <div class="service-item">
-                          <h5>Онлайн сессия</h5>
-                          <p>3000.00</p>
-                          <input id="service-1" name="service" type="checkbox" value="2">
-                      </div>
-
-                      <div class="service-item">
-                          <h5>Сессия для пар</h5>
-                          <p>7000.00</p>
-                          <input id="service-2" name="service" type="checkbox" value="3">
-                      </div>
-              </div>
-          </div>
           <div class="form-group">
               <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Записаться">
           </div>
@@ -135,8 +80,9 @@
   </div>
 
     </div>
+    {% endblock %}
+    {% block js %}
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/locales-all.min.js"></script>
     <script src="/static/js/scripts.js"></script>
-  </body>
-</html>
+    {% endblock %}

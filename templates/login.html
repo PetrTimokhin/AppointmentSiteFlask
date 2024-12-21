@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+    {% block title_head %}
+        Авторизация
+    {% endblock %}
+
+    {% block link %}
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='css/login.css') }}"
+    />
+    {% endblock %}
+
+    {% block style %}
+    {% endblock %}
+
+    {% block title_body %}
+    {% endblock %}
+
+    {% block content %}
+
+  <div class="login">
+    <form class="login-screen" action="{{ url_for('login') }}" method="post" enctype="multipart/form-data">
+      <div class="app-title">
+        <h1>Авторизация</h1>
+      </div>
+
+      <div class="login-form">
+
+        <div class="control-group">
+            <input type="text" class="login-field" name="login"
+                   placeholder="Имя" id="login-name" required="required">
+            <label class="login-field-icon fui-user" for="login-name"></label>
+        </div>
+
+        <div class="control-group">
+            <input type="password" class="login-field" name="password"
+                   placeholder="Пароль" id="login-pass" required="required">
+            <label class="login-field-icon fui-lock" for="login-pass"></label>
+        </div>
+
+        <button class="btn">Войти</button>
+          <div class="login-link">
+            <span class="login-link">Нет аккаунта?</span>
+            <a class="login-link" href="/register">Зарегистрируйтесь!</a>
+          </div>
+      </div>
+    </form>
+  </div>
+
+    {% endblock %}

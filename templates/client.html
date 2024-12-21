@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+    {% block title_head %}
+        {{ client_name }}
+    {% endblock %}
+
+    {% block link %}
+<!--    <link-->
+<!--      rel="stylesheet"-->
+<!--      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"-->
+<!--    />-->
+<!--    <link-->
+<!--      rel="stylesheet"-->
+<!--      type="text/css"-->
+<!--      href="/static/css/styles.css"-->
+<!--    />-->
+    {% endblock %}
+
+{% block title_body %}
+
+{% endblock %}
+
+{% block content %}
+<h2>Записи клиента {{ client_name }}:</h2>
+{% if appointments %}
+        <ul>
+        {% for i in appointments %}
+            <li>Дата: {{i.date}};<br>
+                Время:{{i.time}};<br>
+                Услуга:{{i.service}};<br>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+
+{% endblock %}
