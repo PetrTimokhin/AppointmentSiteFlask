@@ -1,10 +1,43 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Страница администратора</title>
-</head>
-<body>
-    <h1>Все работает!!!</h1>
-</body>
-</html>
+{% extends 'base.html' %}
+
+    {% block title_head %}
+        {{ client_name }}
+    {% endblock %}
+
+    {% block link %}
+      <link
+          rel="stylesheet"
+          type="text/css"
+          href="{{ url_for('static', filename='css/admin.css') }}"
+      />
+    {% endblock %}
+
+{% block title_body %}
+
+{% endblock %}
+
+{% block content %}
+<div class="style_1">
+<h2>Записи всех клиентов:</h2>
+{% if appointments %}
+
+        {% for user in all_users %}
+            <p class="style_2">{{ user.login }}</p>
+            {% for appoint in appointments %}
+                {% if appoint.user_id == user.id %}
+                <ul>
+                    <li>Дата: {{appoint.date}};<br>
+                        Время: {{appoint.time}};<br>
+                        Услуга: {{appoint.service}};<br>
+                    </li>
+                </ul>
+                {% endif %}
+            {% endfor %}
+
+        {% endfor %}
+
+    {% endif %}
+
+
+{% endblock %}
+</div>

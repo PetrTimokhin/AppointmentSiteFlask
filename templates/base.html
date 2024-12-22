@@ -25,6 +25,11 @@
         <li><a href="/" class="">Главная</a></li>
         <li><a href="/client">Личный кабинет</a></li>
         <li><a href="login">Регистрация|Авторизация</a></li>
+        <li><a href="">Пользователь:    {% if current_user.login %}
+                                        {{current_user.login}}
+                                        {% else %}
+                                        {{"не авторизован"}}
+                                        {% endif %}</a></li>
         <li><a href="/logout">Выход</a></li>
       </ul>
     </div>

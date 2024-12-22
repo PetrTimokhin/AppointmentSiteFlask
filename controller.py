@@ -31,12 +31,51 @@ def index():
         db.session.commit()
         print(user_appointment.service)
         return redirect(url_for('client'))
-    appointment = UserAppointData.query.filter_by(user_id=current_user.id).first()
+
     return render_template("index.html",
-                           client_name=appointment.client_name,
-                           phone_number=appointment.phone_number)
+                           client_name=current_user.login)
 
 # user = request.args.get('user')
+
+
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    # страницу регистрации заменяет страница авторизации для авторизованных
+    if current_user.is_authenticated:
+        return render_template("login.html")
+
+    elif request.method == 'POST':
+        # принимаем данные форм с html страницы
+        email = request.form.get('email')
+        username = request.form.get('login')
+        password = request.form.get('password')
+
+        # проверка на уникальность имени и email
+        if (User.query.filter_by(login=username).first()
+                or User.query.filter_by(email=email).first()):
+            message = "Такое имя или email уже используются!!!"
+            return render_template("register.html", message=message)
+
+        try:
+            user = User(email=email, login=username, password=password)
+
+            code = ''.join(
+                [random.choice(string.ascii_letters + string.digits) for i in
+                 range(32)])
+            user_confirm = EmailConfirm(login=username, code=code)
+            db.session.add(user)
+            db.session.add(user_confirm)
+            db.session.commit()
+
+            message = (f'Ссылка для подтверждения '
+                       f'почты: http://127.0.0.1:5000/email-confirm/{code}')
+
+            send_email(message, email, 'Подтверждение почты')
+
+        except:
+            message = "Ошибка ввода данных!"
+            return render_template("register.html", message=message)
+    return render_template("register.html")
 
 
 @app.route('/email-confirm/<code>')
@@ -65,35 +104,6 @@ def email_confirm(code):
     return redirect(url_for('register'))
 
 
-@app.route("/register", methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        # принимаем данные форм с html страницы
-        email = request.form.get('email')
-        username = request.form.get('login')
-        password = request.form.get('password')
-
-        try:
-            user = User(email=email, login=username, password=password)
-
-            code = ''.join(
-                [random.choice(string.ascii_letters + string.digits) for i in
-                 range(32)])
-            user_confirm = EmailConfirm(login=username, code=code)
-            db.session.add(user)
-            db.session.add(user_confirm)
-            db.session.commit()
-
-            message = (f'Ссылка для подтверждения '
-                       f'почты: http://127.0.0.1:5000/email-confirm/{code}')
-
-            send_email(message, email, 'Подтверждение почты')
-
-        except :
-            return render_template("register.html")
-    return render_template("register.html")
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -111,20 +121,34 @@ def login():
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin():
-    return render_template("admin.html")
+    if current_user.login == "admin":
+        all_users_id_lst = []
+        all_users = User.query.all()
+        print(type(all_users))
+        for each in all_users:
+            all_users_id_lst.append(each.id)
+
+        print(all_users_id_lst)
+        everyone_appointments = UserAppointData.query.all()
+        return render_template("admin.html",
+                               appointments=everyone_appointments,
+                               all_users=all_users,
+                               User=User,
+                               all_users_id_lst=all_users_id_lst)
 
 
 @app.route("/client", methods=['GET', 'POST'])
 @login_required
 def client():
-    actual_user = UserAppointData.query.filter_by(
-                                            user_id=current_user.id).first()
-    appointments = UserAppointData.query.filter_by(
-                                            user_id=current_user.id).all()
+    if current_user.login == "admin":
+        return redirect("/admin")
+    else:
+        appointments = UserAppointData.query.filter_by(
+            user_id=current_user.id).all()
 
-    return render_template("client.html",
-                           appointments=appointments,
-                           client_name=actual_user.client_name)
+        return render_template("client.html",
+                               appointments=appointments,
+                               client_name=current_user.login)
 
 
 @app.route('/logout')

@@ -11,7 +11,8 @@ class EmailConfirm(db.Model):
     code = db.Column(db.String(33), unique=True, nullable=False)
 
 
-# создание модели БД
+# создание модели БД,
+# добавляем родительский класс UserMixin для flask_login
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(60), unique=True)
