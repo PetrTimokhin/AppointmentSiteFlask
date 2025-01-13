@@ -1,8 +1,12 @@
+"""Файл для работы со всеми контроллерами проекта"""
+
+
 import random
 import string
 
 from flask import render_template, request, redirect, url_for
 from flask_login import login_required, login_user, logout_user, current_user
+from flask.wrappers import Response
 
 from app import app, db
 from models import User, EmailConfirm, UserAppointData
@@ -12,10 +16,21 @@ from mail import send_email
 @app.route("/", methods=['GET', 'POST'])
 @app.route("/index", methods=['GET', 'POST'])
 @login_required
-def index():
+def index() -> Response or str:
+    """
+    Функция главной страницы сайта
+
+    Обработчик для страницы index.html, где аутентифицированный пользователь
+    может создать новую запись. При GET-запросе отображается форма, а при
+    POST-запросе данные формы обрабатываются и сохраняются в базе данных,
+    после чего пользователь перенаправляется на страницу client.html
+
+    Returns:
+        str: шаблон страницы index.html
+        Response: перенаправление на функцию def client
+    """
     actual_user = User.query.filter_by(id=current_user.id).first()
     if request.method == 'POST':
-        # client_name = request.form.get('client_name')
         phone_number = request.form.get('phone_number')
         date = request.form.get('date')
         time = request.form.get('time')
@@ -29,17 +44,29 @@ def index():
                                             user_id=actual_user.id)
         db.session.add(user_appointment)
         db.session.commit()
-        print(user_appointment.service)
         return redirect(url_for('client'))
 
     return render_template("index.html",
                            client_name=current_user.login)
 
-# user = request.args.get('user')
-
 
 @app.route("/register", methods=['GET', 'POST'])
-def register():
+def register() -> str:
+    """
+    Функция обработчик страницы register.html
+
+    Если пользователь уже зарегистрирован, то он перенаправляется на страницу
+    login.html;
+    При GET-запросе отображается форма register.html. При POST-запросе: данные
+    формы обрабатываются, проверяются на уникальность и сохраняются в базе
+    данных. Затем в этой функции генерируется код для проверки email, который
+    подставляется в ссыку, высланную на указанную эл почту при регистрации.
+    Затем запускается функция email_confirm;
+    При ошибке ввода данных функция перенаправляет на страницу register.html;
+
+    Returns:
+        str: шаблон страницы register.html
+    """
     # страницу регистрации заменяет страница авторизации для авторизованных
     if current_user.is_authenticated:
         return render_template("login.html")
@@ -80,7 +107,25 @@ def register():
 
 @app.route('/email-confirm/<code>')
 # Функция для подтверждения email
-def email_confirm(code):
+def email_confirm(code: str) -> Response:
+    """
+    Функция подтверждения email пользователя
+
+    Функция находит в БД пользователя с кодом переданным в функцию. Если такой
+    пользователь найден, сохраняет в БД информацию, что пользователь прошел
+    подтверждение email, и удаляет из БД сгенерированный код. Далее запускается
+    функция login_user(user) от имени этого пользователя, что завершает процесс
+    регистрации, перенаправляя пользователя в функцию index;
+    Если пользователь с данным кодом не найден, то данная функция
+    перенаправляет на функцию register;
+
+    Args:
+        code: str (описание)
+
+    Returns:
+        Response: перенаправление на функцию def index
+        Response: перенаправление на функцию def register
+    """
     # Проверяем, существует ли подтверждение с таким кодом в БД
     user_confirm = EmailConfirm.query.filter_by(code=code).first()
     # Если подтверждение существует, то удаляем его из БД и меняем статус
@@ -98,16 +143,31 @@ def email_confirm(code):
         db.session.delete(user_confirm)
         # Сохраняем изменения в БД
         db.session.commit()
+        # специальная функция импортируемая из flask-login
         login_user(user)
+        # Возвращаемся на страницу index
         return redirect(url_for('index'))
-    # Возвращаемся на страницу index
+    # Возвращаемся на страницу register
     return redirect(url_for('register'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    Функция обработчик страницы login.html
+
+    При GET-запросе отображается форма login.html. При POST-запросе: данные
+    формы обрабатываются, если пользователь с такими данными найден в БД и он
+    зарегистрирован, то данная функция запускает функцию login_user, что
+    делает данного пользователя авторизированным, и перенаправляет
+    в функцию index;
+    При ошибке ввода данных функция перенаправляет на страницу login.html;
+
+    Returns:
+        Response: перенаправление на функцию def index
+        str: шаблон страницы login.html
+    """
     if request.method == 'POST':
-        # email = request.form.get('email')
         username = request.form.get('login')
         password = request.form.get('password')
         # Чтение данных
@@ -120,15 +180,23 @@ def login():
 
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
-def admin():
+def admin() -> str:
+    """
+    Функция обработчик страницы admin.html
+
+    Функция работает только с пользователем admin. Перенаправляет на страницу
+    admin.html, на которой предоставляет данные обо всех записях всех
+    пользователей;
+
+    Returns:
+        str: шаблон страницы admin.html
+    """
     if current_user.login == "admin":
         all_users_id_lst = []
         all_users = User.query.all()
-        print(type(all_users))
         for each in all_users:
             all_users_id_lst.append(each.id)
 
-        print(all_users_id_lst)
         everyone_appointments = UserAppointData.query.all()
         return render_template("admin.html",
                                appointments=everyone_appointments,
@@ -139,7 +207,19 @@ def admin():
 
 @app.route("/client", methods=['GET', 'POST'])
 @login_required
-def client():
+def client() -> str or Response:
+    """
+    Функция обработчик страницы client.html
+
+    Функция проверяет имя текущего пользователя, если оно admin, то
+    перенаправляет в функцию admin, если нет, то перенаправляет на
+    страницу client.html, на которой предоставляет данные обо всех записях
+    текущего пользователя;
+
+    Returns:
+        Response: перенаправление на функцию def admin
+        str: шаблон страницы client.html
+    """
     if current_user.login == "admin":
         return redirect("/admin")
     else:
@@ -153,19 +233,36 @@ def client():
 
 @app.route('/logout')
 @login_required
-def logout():
+def logout() -> Response:
+    """
+    Функция обработчик страницы logout.html
+
+    Данная функция делает текущего пользователя не авторизированным и
+    перенаправляет на функцию index;
+
+    Returns:
+        Response: перенаправление на функцию def index
+    """
     logout_user()
     return redirect(url_for('index'))
 
 
 @app.after_request
-def redirect_to_sign(response):
+def redirect_to_sign(response: Response) -> Response:
+    """
+    Обработка ответа с кодом статуса 401;
+
+    Функция запускается после обработки каждого запроса, но до того, как будет
+    отправлен ответ клиенту. Когда приходит ответ с кодом статуса 401
+    (несанкционирован), он автоматически перенаправляет пользователя на
+    страницу регистрации. Если код статуса отличен от 401, то ответ остается
+    неизменным.
+
+    Returns:
+        Response: перенаправление на функцию def register
+        Response: возвращает переменную response в неизменном виде
+    """
     if response.status_code == 401:
         return redirect(url_for('register'))
+    print("redirect_to_sign:", type(response))
     return response
-
-
-@app.route('/base')
-def base():
-    return render_template("base.html")
-

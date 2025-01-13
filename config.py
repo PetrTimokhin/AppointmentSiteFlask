@@ -1,3 +1,5 @@
+"""В этом файле хранятся секретные ключи"""
+
 # в app.py, для SQLAlchemy
 DATABASE_URI = 'sqlite:///database.db'
 

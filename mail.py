@@ -1,3 +1,6 @@
+""" Файл для реализации проверки email при регистрации"""
+
+
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -24,33 +27,5 @@ def send_email(message: str, to: str, subject: str):
     server.sendmail(EMAIL_LOGIN, msg['To'], msg.as_string())
 
     server.quit()
-
-
-# send_email('Привет, готов к уроку?', 'ptimohin01@gmail.com ', 'Занятие')
-
-
-
-
-# import smtplib
-# from email.mime.multipart import MIMEMultipart
-# from email.mime.text import MIMEText
-#
-# from config import MY_MAIL, MY_MAIL_PASSWORD
-#
-# EMAIL_LOGIN = MY_MAIL
-# EMAIL_PASSWORD = MY_MAIL_PASSWORD
-#
-# msg = MIMEMultipart()
-#
-# to_email = 'ptimohin@bk.ru'
-# message = 'Сообщение сделано при помощи пайтон'
-#
-# msg.attach(MIMEText(message, 'plain'))
-# server = smtplib.SMTP('smtp.yandex.ru: 465')
-# server.starttls()
-# server.login(MY_MAIL, MY_MAIL_PASSWORD)
-# server.sendmail(MY_MAIL, to_email, msg.as_string())
-#
-# server.quit()
 
 
