@@ -13,8 +13,8 @@ from models import User, EmailConfirm, UserAppointData
 from mail import send_email
 
 
-@app.route("/", methods=['GET', 'POST'])
-@app.route("/index", methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 @login_required
 def index() -> Response or str:
     """
@@ -46,11 +46,11 @@ def index() -> Response or str:
         db.session.commit()
         return redirect(url_for('client'))
 
-    return render_template("index.html",
+    return render_template('index.html',
                            client_name=current_user.login)
 
 
-@app.route("/register", methods=['GET', 'POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register() -> str:
     """
     Функция обработчик страницы register.html
@@ -69,40 +69,40 @@ def register() -> str:
     """
     # страницу регистрации заменяет страница авторизации для авторизованных
     if current_user.is_authenticated:
-        return render_template("login.html")
+        return render_template('login.html')
+    if request.method == 'GET':
+        return render_template('register.html')
 
-    elif request.method == 'POST':
-        # принимаем данные форм с html страницы
-        email = request.form.get('email')
-        username = request.form.get('login')
-        password = request.form.get('password')
+    # принимаем данные форм с html страницы
+    email = request.form.get('email')
+    username = request.form.get('login')
+    password = request.form.get('password')
 
-        # проверка на уникальность имени и email
-        if (User.query.filter_by(login=username).first()
-                or User.query.filter_by(email=email).first()):
-            message = "Такое имя или email уже используются!!!"
-            return render_template("register.html", message=message)
+    # проверка на уникальность имени и email
+    if (User.query.filter_by(login=username).first()
+            or User.query.filter_by(email=email).first()):
+        message = 'Такое имя или email уже используются!!!'
+        return render_template('register.html', message=message)
 
-        try:
-            user = User(email=email, login=username, password=password)
+    try:
+        user = User(email=email, login=username, password=password)
 
-            code = ''.join(
-                [random.choice(string.ascii_letters + string.digits) for i in
-                 range(32)])
-            user_confirm = EmailConfirm(login=username, code=code)
-            db.session.add(user)
-            db.session.add(user_confirm)
-            db.session.commit()
+        code = ''.join(
+            [random.choice(string.ascii_letters + string.digits) for i in
+             range(32)])
+        user_confirm = EmailConfirm(login=username, code=code)
+        db.session.add(user)
+        db.session.add(user_confirm)
+        db.session.commit()
 
-            message = (f'Ссылка для подтверждения '
-                       f'почты: http://127.0.0.1:5000/email-confirm/{code}')
+        message = (f'Ссылка для подтверждения '
+                   f'почты: http://127.0.0.1:5000/email-confirm/{code}')
 
-            send_email(message, email, 'Подтверждение почты')
+        send_email(message, email, 'Подтверждение почты')
 
-        except:
-            message = "Ошибка ввода данных!"
-            return render_template("register.html", message=message)
-    return render_template("register.html")
+    except:
+        message = 'Ошибка ввода данных!'
+        return render_template('register.html', message=message)
 
 
 @app.route('/email-confirm/<code>')
@@ -130,25 +130,25 @@ def email_confirm(code: str) -> Response:
     user_confirm = EmailConfirm.query.filter_by(code=code).first()
     # Если подтверждение существует, то удаляем его из БД и меняем статус
     # email_confirm у пользователя в БД
-    if user_confirm:
-        # Ищем пользователя в БД по логину, соответствующему логину
-        # в подтверждении
-        user = User.query.filter_by(login=user_confirm.login).first()
-        # Если пользователь найден, то меняем его поле email_confirm
-        # в БД на значение True
-        user.email_confirm = True
-        # Добавляем пользователя в БД
-        db.session.add(user)
-        # Удаляем подтверждение почты из БД
-        db.session.delete(user_confirm)
-        # Сохраняем изменения в БД
-        db.session.commit()
-        # специальная функция импортируемая из flask-login
-        login_user(user)
-        # Возвращаемся на страницу index
-        return redirect(url_for('index'))
-    # Возвращаемся на страницу register
-    return redirect(url_for('register'))
+    if not user_confirm:
+        # Возвращаемся на страницу register
+        return redirect(url_for('register'))
+    # Ищем пользователя в БД по логину, соответствующему логину
+    # в подтверждении
+    user = User.query.filter_by(login=user_confirm.login).first()
+    # Если пользователь найден, то меняем его поле email_confirm
+    # в БД на значение True
+    user.email_confirm = True
+    # Добавляем пользователя в БД
+    db.session.add(user)
+    # Удаляем подтверждение почты из БД
+    db.session.delete(user_confirm)
+    # Сохраняем изменения в БД
+    db.session.commit()
+    # специальная функция импортируемая из flask-login
+    login_user(user)
+    # Возвращаемся на страницу index
+    return redirect(url_for('index'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -167,20 +167,22 @@ def login():
         Response: перенаправление на функцию def index
         str: шаблон страницы login.html
     """
-    if request.method == 'POST':
-        username = request.form.get('login')
-        password = request.form.get('password')
-        # Чтение данных
-        user = User.query.filter_by(login=username, password=password).first()
-        if user and user.email_confirm:
-            login_user(user)
-            return redirect(url_for('index'))
-    return render_template("login.html")
+    if request.method == 'GET':
+        return render_template('login.html')
+
+    username = request.form.get('login')
+    password = request.form.get('password')
+    # Чтение данных
+    user = User.query.filter_by(login=username, password=password).first()
+    if user and user.email_confirm:
+        login_user(user)
+        return redirect(url_for('index'))
+    return render_template('login.html')
 
 
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
-def admin() -> str:
+def admin() -> str or Response:
     """
     Функция обработчик страницы admin.html
 
@@ -189,23 +191,26 @@ def admin() -> str:
     пользователей;
 
     Returns:
+        Response: перенаправление на функцию def client
         str: шаблон страницы admin.html
     """
-    if current_user.login == "admin":
-        all_users_id_lst = []
-        all_users = User.query.all()
-        for each in all_users:
-            all_users_id_lst.append(each.id)
+    if current_user.login != 'admin':
+        return redirect(url_for('client'))
 
-        everyone_appointments = UserAppointData.query.all()
-        return render_template("admin.html",
-                               appointments=everyone_appointments,
-                               all_users=all_users,
-                               User=User,
-                               all_users_id_lst=all_users_id_lst)
+    all_users_id_lst = []
+    all_users = User.query.all()
+    for each in all_users:
+        all_users_id_lst.append(each.id)
+
+    everyone_appointments = UserAppointData.query.all()
+    return render_template('admin.html',
+                           appointments=everyone_appointments,
+                           all_users=all_users,
+                           User=User,
+                           all_users_id_lst=all_users_id_lst)
 
 
-@app.route("/client", methods=['GET', 'POST'])
+@app.route('/client', methods=['GET', 'POST'])
 @login_required
 def client() -> str or Response:
     """
@@ -220,15 +225,15 @@ def client() -> str or Response:
         Response: перенаправление на функцию def admin
         str: шаблон страницы client.html
     """
-    if current_user.login == "admin":
-        return redirect("/admin")
-    else:
-        appointments = UserAppointData.query.filter_by(
-            user_id=current_user.id).all()
+    if current_user.login == 'admin':
+        return redirect(url_for('admin'))
 
-        return render_template("client.html",
-                               appointments=appointments,
-                               client_name=current_user.login)
+    appointments = UserAppointData.query.filter_by(
+        user_id=current_user.id).all()
+
+    return render_template('client.html',
+                           appointments=appointments,
+                           client_name=current_user.login)
 
 
 @app.route('/logout')
@@ -264,5 +269,4 @@ def redirect_to_sign(response: Response) -> Response:
     """
     if response.status_code == 401:
         return redirect(url_for('register'))
-    print("redirect_to_sign:", type(response))
     return response

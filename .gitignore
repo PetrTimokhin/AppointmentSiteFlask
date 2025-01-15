@@ -163,5 +163,6 @@ cython_debug/
 idea/
 *idea
 /idea
-
+config.py
 draft.py
+cognetive.py

@@ -67,5 +67,4 @@ def load_user(user_id: int) -> User:
     Данная функция предназначена для управления сессиями пользователей и
     обеспечения доступа к данным пользователя во время запросов;
     """
-    print("load_user:", type(User.query.get(user_id)))
     return User.query.get(user_id)  # user_id это id = db.Column
