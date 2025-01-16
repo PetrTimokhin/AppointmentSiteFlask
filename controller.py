@@ -30,24 +30,23 @@ def index() -> Response or str:
         Response: перенаправление на функцию def client
     """
     actual_user = User.query.filter_by(id=current_user.id).first()
-    if request.method == 'POST':
-        phone_number = request.form.get('phone_number')
-        date = request.form.get('date')
-        time = request.form.get('time')
-        service = request.form.get('service')
-        user_appointment = UserAppointData(
-                                            client_name=actual_user.login,
-                                            phone_number=phone_number,
-                                            date=date,
-                                            time=time,
-                                            service=service,
-                                            user_id=actual_user.id)
-        db.session.add(user_appointment)
-        db.session.commit()
-        return redirect(url_for('client'))
-
-    return render_template('index.html',
-                           client_name=current_user.login)
+    if request.method == 'GET':
+        return render_template('index.html',
+                               client_name=current_user.login)
+    phone_number = request.form.get('phone_number')
+    date = request.form.get('date')
+    time = request.form.get('time')
+    service = request.form.get('service')
+    user_appointment = UserAppointData(
+                                        client_name=actual_user.login,
+                                        phone_number=phone_number,
+                                        date=date,
+                                        time=time,
+                                        service=service,
+                                        user_id=actual_user.id)
+    db.session.add(user_appointment)
+    db.session.commit()
+    return redirect(url_for('client'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
