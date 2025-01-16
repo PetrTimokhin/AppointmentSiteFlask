@@ -1,6 +1,5 @@
 """Файл для работы со всеми контроллерами проекта"""
 
-
 import random
 import string
 
@@ -151,7 +150,7 @@ def email_confirm(code: str) -> Response:
 
 
 @app.route('/login', methods=['GET', 'POST'])
-def login():
+def login() -> str or Response:
     """
     Функция обработчик страницы login.html
 
